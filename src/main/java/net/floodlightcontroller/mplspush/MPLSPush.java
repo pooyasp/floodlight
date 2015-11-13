@@ -109,10 +109,11 @@ public class MPLSPush implements IOFMessageListener, IFloodlightModule {
 		logger.info("POOYA_HOSSEIN_YOLO_SWAG_BOOTY_420");
 		
 		for (IDevice i : this.deviceService.getAllDevices()){
-			for (SwitchPort sp: i.getAttachmentPoints()){
-				logger.info(sp.getSwitchDPID().toString() + "    " + i.getMACAddressString());
-				this.edgeSwitchesIDs.add(sp.getSwitchDPID());
-			}
+			//for (SwitchPort sp: i.getAttachmentPoints()){
+			SwitchPort sp = i.getAttachmentPoints()[0];
+			logger.info(sp.getSwitchDPID().toString() + "    " + i.getMACAddressString());
+			this.edgeSwitchesIDs.add(sp.getSwitchDPID());
+			//}
 		}
 		
 		logger.info(this.edgeSwitchesIDs.size() + "");
