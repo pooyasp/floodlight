@@ -121,7 +121,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 			public void run() {
 				installRules();
 			}
-		}, 25000);
+		}, 125000);
 
 	}
 
@@ -233,6 +233,72 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 			}
 		
 		}
+		
+		//Last switch: pop MPLS
+		
+		/*DatapathId switchDPID = switchPortList.get(switchPortList.size()-1).getNodeId();
+		IOFSwitch sw = switchService.getSwitch(switchDPID);
+		
+		Match.Builder mb = sw.getOFFactory().buildMatch();
+		
+		OFFlowMod.Builder fmb = sw.getOFFactory().buildFlowAdd();
+	
+		OFActionOutput.Builder aob = sw.getOFFactory().actions().buildOutput();
+		
+		List<OFAction> actions = new ArrayList<OFAction>();
+		
+		mb.setExact(MatchField.ETH_TYPE, EthType.MPLS_UNICAST);
+		mb.setExact(MatchField.MPLS_LABEL, U32.of(mplsId));
+		mb.setExact(MatchField.MPLS_TC, U8.of((short)4)); 
+		logger.debug("matching mpls on switch: " + sw.toString() + " mpls label:" + mplsId);
+		
+		//OFPort outPort = switchPortList.get(switchPortList.size()-1).getPortId();
+		
+		//aob.setPort(outPort);
+		
+		actions.add(sw.getOFFactory().actions().popMpls(EthType.IPv4));
+		
+		//aob.setMaxLen(Integer.MAX_VALUE);
+		
+		
+		List<OFInstruction> instructions = new ArrayList<OFInstruction>();
+		instructions.add(sw.getOFFactory().instructions().applyActions(actions));
+		instruct
+		
+		// compile
+		fmb.setMatch(mb.build()) // was match w/o modifying input port
+		.setActions(actions)
+		.setIdleTimeout(100)
+		.setHardTimeout(150)
+		.setBufferId(OFBufferId.NO_BUFFER)
+		.setCookie(cookie)
+		.setPriority(1);
+
+		try {
+			if (logger.isTraceEnabled()) {
+				logger.trace("Pushing Route flowmod routeIndx={} " +
+						"sw={} inPort={} outPort={}",
+						new Object[] {indx,
+						sw,
+						fmb.getMatch().get(MatchField.IN_PORT),
+						outPort });
+			}
+			messageDamper.write(sw, fmb.build());
+			sw.flush();
+			
+
+			// Push the packet out the source switch
+			//if (sw.getId().equals(pinSwitch)) {
+				// TODO: Instead of doing a packetOut here we could also
+				// send a flowMod with bufferId set....
+				//pushPacket(sw, pi, false, outPort, cntx);
+				//srcSwitchIncluded = true;
+			//}
+		} catch (IOException e) {
+			logger.error("Failure writing flow mod", e);
+		}*/
+
+		
 			
 	}
 	
