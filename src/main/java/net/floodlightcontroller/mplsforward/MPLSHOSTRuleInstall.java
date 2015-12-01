@@ -16,6 +16,7 @@ import org.projectfloodlight.openflow.protocol.match.Match;
 import org.projectfloodlight.openflow.protocol.match.MatchField;
 import org.projectfloodlight.openflow.types.OFBufferId;
 import org.projectfloodlight.openflow.types.OFPort;
+import org.projectfloodlight.openflow.types.TableId;
 import org.projectfloodlight.openflow.types.U64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +111,7 @@ public class MPLSHOSTRuleInstall implements IFloodlightModule, IDeviceListener {
 	@Override
 	public void deviceAdded(IDevice device) {
 		for (SwitchPort sp: device.getAttachmentPoints()){
-			logger.info("HOSSEIN_POOYA_YOLO_SWAG_BOOTY420_DEVICE_ADDED");
+			logger.info("HOSSEIN_POOYA_YOLO420_DEVICE_ADDED");
 			logger.info(sp.getSwitchDPID().toString() + "    " + device.getMACAddressString());
 			
 			IOFSwitch sw = switchService.getSwitch(sp.getSwitchDPID());
@@ -139,8 +140,8 @@ public class MPLSHOSTRuleInstall implements IFloodlightModule, IDeviceListener {
 			// compile
 			fmb.setMatch(mb.build()) // was match w/o modifying input port
 			.setActions(actions)
-			.setIdleTimeout(1000)
-			.setHardTimeout(1500)
+			.setIdleTimeout(0)
+			.setTableId(TableId.of(5))
 			.setBufferId(OFBufferId.NO_BUFFER)
 			.setCookie(cookie)
 			.setOutPort(outPort)
