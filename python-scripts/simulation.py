@@ -83,8 +83,8 @@ def generate_random_graph_powerlaw(n):
 
 	while not nx.is_connected(G):
 		powerlaw_gamma = lambda N: nx.utils.powerlaw_sequence(N, exponent=gamma)
-    	z = nx.utils.create_degree_sequence(n, powerlaw_gamma, max_tries=100)
-    	G = nx.configuration_model(z)
+		z = nx.utils.create_degree_sequence(n, powerlaw_gamma, max_tries=100)
+		G = nx.configuration_model(z)
 
 	G = [n for n in nx.connected_component_subgraphs(G)][0]
 	G.remove_edges_from(G.selfloop_edges())
@@ -233,30 +233,41 @@ def count_rules(graph):
 if __name__ == '__main__':
 	# create a topology with 10 core switches, 20 edge switches and 10 hosts
 	# per switch (i.e. 200 hosts in total)
-	
-	topology = generate_topology([50])
-	print('Topology ready!')
-	shortest_paths = find_all_Shortest_paths(topology)
-	print('Found shortest paths')
-	paths_graph = make_path_graph(shortest_paths)
-	print('Made the graph')
-	print(count_rules(paths_graph))
-	#for n in [n for n,d in paths_graph.nodes(data=True) if d['bipartite'] == 1]:
-	#	print n, paths_graph.degree(n)
+	repeat = 5
+	param = [50]#, 100, 200, 500, 1000]
 
-	#for e in paths_graph.edges():
-	#	print e[0], e[1]
-	#print ('################')
+	result = []
+	for n in param:
+		improve = 0.0
+		for i in range(repeat):
+			topology = generate_topology([n])
+			#print('Topology ready!')
+			shortest_paths = find_all_Shortest_paths(topology)
+			#print('Found shortest paths')
+			paths_graph = make_path_graph(shortest_paths)
+			#print('Made the graph')
+			r1 = count_rules(paths_graph)
+			#for n in [n for n,d in paths_graph.nodes(data=True) if d['bipartite'] == 1]:
+			#	print n, paths_graph.degree(n)
 
-	print('Let\'s aggregate')
-	aggregated_paths_graph = aggregate(paths_graph)
-	print(count_rules(aggregated_paths_graph))
-	
-	#for n in [n for n,d in aggregated_paths_graph.nodes(data=True) if d['bipartite'] == 1]:
-	#	print n, aggregated_paths_graph.degree(n)
+			#for e in paths_graph.edges():
+			#	print e[0], e[1]
+			#print ('################')
 
-	#for e in aggregated_paths_graph.edges():
-	#	print e[0], e[1]
+			#print('Let\'s aggregate')
+			aggregated_paths_graph = aggregate(paths_graph)
+			r2 = count_rules(aggregated_paths_graph)
+			
+			#for n in [n for n,d in aggregated_paths_graph.nodes(data=True) if d['bipartite'] == 1]:
+			#	print n, aggregated_paths_graph.degree(n)
+
+			#for e in aggregated_paths_graph.edges():
+			#	print e[0], e[1]
+			improve += ((r1 - r2) * 100.0) / r1
+		result.append((n, improve/repeat))
+
+	print(result)
+
 
 	
 	
