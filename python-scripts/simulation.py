@@ -220,53 +220,49 @@ def count_rules(graph):
 
  	count = len(graph.edges())
 
- 	count += len([n for n,d in paths_graph.nodes(data=True) if d['bipartite'] == 0])
+ 	count += len([n for n,d in graph.nodes(data=True) if d['bipartite'] == 0])
 
  	visited = []
- 	for n in [n for n,d in paths_graph.nodes(data=True) if d['bipartite'] == 1]:
+ 	for n in [n for n,d in graph.nodes(data=True) if d['bipartite'] == 1]:
  		if not n in visited:
  			visited.append(n)
 			count += len(n.ancestors) + 1
 
  	return count
 
+def test(topology):
+ 	shortest_paths = find_all_Shortest_paths(topology)
+	paths_graph = make_path_graph(shortest_paths)
+	r1 = count_rules(paths_graph)
+	print(len(paths_graph.edges()))
+	print(r1)
+	aggregated_paths_graph = aggregate(paths_graph)
+	r2 = count_rules(aggregated_paths_graph)
+	print(len(aggregated_paths_graph.edges()))
+	print(r2)
+	return ((r1 - r2) * 100.0) / r1
+
 if __name__ == '__main__':
 	# create a topology with 10 core switches, 20 edge switches and 10 hosts
 	# per switch (i.e. 200 hosts in total)
-	repeat = 5
-	param = [50]#, 100, 200, 500, 1000]
+	
+	# repeat = 10
+	# param = [50]#, 100, 200, 500, 1000]
 
-	result = []
-	for n in param:
-		improve = 0.0
-		for i in range(repeat):
-			topology = generate_topology([n])
-			#print('Topology ready!')
-			shortest_paths = find_all_Shortest_paths(topology)
-			#print('Found shortest paths')
-			paths_graph = make_path_graph(shortest_paths)
-			#print('Made the graph')
-			r1 = count_rules(paths_graph)
-			#for n in [n for n,d in paths_graph.nodes(data=True) if d['bipartite'] == 1]:
-			#	print n, paths_graph.degree(n)
+	# result = []
+	# for n in param:
+	# 	improve = 0.0
+	# 	for i in range(repeat):
+	# 		topology = generate_topology([n])
+	# 		improve += test(topology)
+	# 	result.append((n, improve/repeat))
 
-			#for e in paths_graph.edges():
-			#	print e[0], e[1]
-			#print ('################')
-
-			#print('Let\'s aggregate')
-			aggregated_paths_graph = aggregate(paths_graph)
-			r2 = count_rules(aggregated_paths_graph)
-			
-			#for n in [n for n,d in aggregated_paths_graph.nodes(data=True) if d['bipartite'] == 1]:
-			#	print n, aggregated_paths_graph.degree(n)
-
-			#for e in aggregated_paths_graph.edges():
-			#	print e[0], e[1]
-			improve += ((r1 - r2) * 100.0) / r1
-		result.append((n, improve/repeat))
-
-	print(result)
+	# print(result)
+	g1 = nx.read_graphml('/home/pooya/Bin/floodlight/python-scripts/Chinanet.graphml')
+	#print(test(g1))
+	g2 = nx.read_graphml('/home/pooya/Bin/floodlight/python-scripts/Bellcanada.graphml')
+	print(test(g2))
+	
 
 
 	
