@@ -77,8 +77,7 @@ public class TProtocolUtil {
      * @param value the versioned values
      * @return the thrift object
      */
-    @SafeVarargs
-	public static KeyedValues getTKeyedValues(ByteArray key, 
+    public static KeyedValues getTKeyedValues(ByteArray key, 
                                               Versioned<byte[]>... value) {
         KeyedValues kv = new KeyedValues();
         kv.setKey(key.get());

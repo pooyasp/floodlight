@@ -128,7 +128,8 @@ public class UDP extends BasePacket {
      *      -checksum : 0
      *      -length : 0
      */
-    public byte[] serialize() {
+    @Override
+	public byte[] serialize() {
         byte[] payloadData = null;
         if (payload != null) {
             payload.setParent(this);
@@ -224,8 +225,8 @@ public class UDP extends BasePacket {
     public IPacket deserialize(byte[] data, int offset, int length)
             throws PacketParsingException {
         ByteBuffer bb = ByteBuffer.wrap(data, offset, length);
-        this.sourcePort = TransportPort.of((int) (bb.getShort() & 0xffff)); // short will be signed, pos or neg
-        this.destinationPort = TransportPort.of((int) (bb.getShort() & 0xffff)); // convert range 0 to 65534, not -32768 to 32767
+        this.sourcePort = TransportPort.of(bb.getShort() & 0xffff); // short will be signed, pos or neg
+        this.destinationPort = TransportPort.of(bb.getShort() & 0xffff); // convert range 0 to 65534, not -32768 to 32767
         this.length = bb.getShort();
         this.checksum = bb.getShort();
         // Grab a snapshot of the first four bytes of the UDP payload.

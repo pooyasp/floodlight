@@ -101,7 +101,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             this.endInclusive = endInclusive;
         }
         
-        public boolean incorporateComparison(String columnName,
+        @Override
+		public boolean incorporateComparison(String columnName,
                 OperatorPredicate.Operator operator, Comparable<?> value,
                 CompoundPredicate.Operator parentOperator) {
             
@@ -211,7 +212,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             return (startValue == endValue) && startInclusive && endInclusive;
         }
         
-        public boolean canExecuteEfficiently() {
+        @Override
+		public boolean canExecuteEfficiently() {
             ColumnIndexMode indexMode = storageSource.getColumnIndexMode(tableName, columnName);
             switch (indexMode) {
             case NOT_INDEXED:
@@ -224,7 +226,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             return true;
         }
 
-        public List<Map<String,Object>> execute(String columnNameList[]) {
+        @Override
+		public List<Map<String,Object>> execute(String columnNameList[]) {
             List<Map<String,Object>> rowList;
             if (isEqualityRange())
                 rowList = storageSource.executeEqualityQuery(tableName, columnNameList, columnName, startValue);
@@ -314,7 +317,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             return true;
         }
         
-        public boolean matchesRow(Map<String,Object> row) {
+        @Override
+		public boolean matchesRow(Map<String,Object> row) {
             Comparable value = (Comparable)row.get(columnName);
             return matchesValue(value);
         }
@@ -335,21 +339,25 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             this.value = value;
         }
 
-        public boolean incorporateComparison(String columnName,
+        @Override
+		public boolean incorporateComparison(String columnName,
                 OperatorPredicate.Operator operator, Comparable<?> value,
                 CompoundPredicate.Operator parentOperator) {
             return false;
         }
 
-        public boolean canExecuteEfficiently() {
+        @Override
+		public boolean canExecuteEfficiently() {
             return false;
         }
 
-        public List<Map<String,Object>> execute(String columnNames[]) {
+        @Override
+		public List<Map<String,Object>> execute(String columnNames[]) {
             throw new StorageException("Unimplemented predicate.");
         }
         
-        public boolean matchesRow(Map<String,Object> row) {
+        @Override
+		public boolean matchesRow(Map<String,Object> row) {
             return false;
         }
     }
@@ -372,7 +380,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             this.predicateList = predicateList;
         }
 
-        public boolean incorporateComparison(String columnName,
+        @Override
+		public boolean incorporateComparison(String columnName,
                 OperatorPredicate.Operator operator, Comparable<?> value,
                 CompoundPredicate.Operator parentOperator) {
             // It may be possible to incorporate other operator predicate into this one,
@@ -388,7 +397,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             return false;
         }
 
-        public boolean canExecuteEfficiently() {
+        @Override
+		public boolean canExecuteEfficiently() {
             if (operator == CompoundPredicate.Operator.AND) {
                 for (NoSqlPredicate predicate: predicateList) {
                     if (predicate.canExecuteEfficiently()) {
@@ -414,13 +424,15 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
                 this.primaryKeyName = primaryKeyName;
             }
             
-            public int compare(Map<String,Object> row1, Map<String,Object> row2) {
+            @Override
+			public int compare(Map<String,Object> row1, Map<String,Object> row2) {
                 Comparable key1 = (Comparable)row1.get(primaryKeyName);
                 Comparable key2 = (Comparable)row2.get(primaryKeyName);
                 return key1.compareTo(key2);
             }
             
-            public boolean equals(Object obj) {
+            @Override
+			public boolean equals(Object obj) {
                 if (!(obj instanceof RowComparator))
                     return false;
                 RowComparator rc = (RowComparator)obj;
@@ -506,7 +518,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             return combinedRowList;
         }
         
-        public List<Map<String,Object>> execute(String columnNames[]) {
+        @Override
+		public List<Map<String,Object>> execute(String columnNames[]) {
             List<Map<String,Object>> combinedRowList = null;
             Set<NoSqlPredicate> inefficientPredicates = new HashSet<NoSqlPredicate>();
             for (NoSqlPredicate predicate: predicateList) {
@@ -539,7 +552,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             return filteredRowList;
         }
 
-        public boolean matchesRow(Map<String,Object> row) {
+        @Override
+		public boolean matchesRow(Map<String,Object> row) {
             if (operator == CompoundPredicate.Operator.AND) {
                 for (NoSqlPredicate predicate : predicateList) {
                     if (!predicate.matchesRow(row))  {
@@ -573,7 +587,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
         }
     }
 
-    public void setTablePrimaryKeyName(String tableName, String primaryKeyName) {
+    @Override
+	public void setTablePrimaryKeyName(String tableName, String primaryKeyName) {
         if ((tableName == null) || (primaryKeyName == null))
             throw new NullPointerException();
         tablePrimaryKeyMap.put(tableName, primaryKeyName);
@@ -688,7 +703,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             this.rowOrdering = rowOrdering;
         }
         
-        public int compare(Map<String,Object> row1, Map<String,Object> row2) {
+        @Override
+		public int compare(Map<String,Object> row1, Map<String,Object> row2) {
             if (rowOrdering == null)
                 return 0;
             
@@ -706,7 +722,8 @@ public abstract class NoSqlStorageSource extends AbstractStorageSource {
             return 0;
         }
         
-        public boolean equals(Object obj) {
+        @Override
+		public boolean equals(Object obj) {
             if (!(obj instanceof RowComparator))
                 return false;
             RowComparator rc = (RowComparator)obj;

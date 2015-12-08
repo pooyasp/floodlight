@@ -31,13 +31,13 @@ public class MutableInteger extends Number {
     
     @Override
     public double doubleValue() {
-        return (double) mutableInt;
+        return mutableInt;
     }
 
     @Override
     public float floatValue() {
         // TODO Auto-generated method stub
-        return (float) mutableInt;
+        return mutableInt;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class MutableInteger extends Number {
     @Override
     public long longValue() {
         // TODO Auto-generated method stub
-        return (long) mutableInt;
+        return mutableInt;
     }
 
 }

@@ -176,7 +176,8 @@ public class BSNPROBE extends BasePacket {
     }
 
 
-    public String toString() {
+    @Override
+	public String toString() {
     	StringBuffer sb = new StringBuffer("\n");
     	sb.append("BSN Probe packet");
     	sb.append("\nSource Mac: ");

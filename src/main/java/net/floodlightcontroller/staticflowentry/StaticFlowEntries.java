@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.floodlightcontroller.core.annotations.LogMessageCategory;
 import net.floodlightcontroller.core.util.AppCookie;
 import net.floodlightcontroller.staticflowentry.web.StaticFlowEntryPusherResource;
 import net.floodlightcontroller.util.ActionUtils;
@@ -56,6 +57,7 @@ import org.projectfloodlight.openflow.types.U64;
  * Represents static flow entries to be maintained by the controller on the 
  * switches. 
  */
+@LogMessageCategory("Static Flow Pusher")
 public class StaticFlowEntries {
 	protected static Logger log = LoggerFactory.getLogger(StaticFlowEntries.class);
 	private static final int INFINITE_TIMEOUT = 0;
@@ -73,7 +75,7 @@ public class StaticFlowEntries {
 		int prime = 211;
 		int flowHash = 2311;
 		for (int i=0; i < name.length(); i++) {
-			flowHash = flowHash * prime + (int)name.charAt(i);
+			flowHash = flowHash * prime + name.charAt(i);
 		}
 
 		return AppCookie.makeCookie(StaticFlowEntryPusher.STATIC_FLOW_APP_ID, flowHash);
@@ -106,7 +108,7 @@ public class StaticFlowEntries {
 		JsonParser jp;
 
 		try {
-			jp = f.createParser(fmJson);
+			jp = f.createJsonParser(fmJson);
 		} catch (JsonParseException e) {
 			throw new IOException(e);
 		}
@@ -612,7 +614,7 @@ public class StaticFlowEntries {
 		String ipProto = "NOT_SPECIFIED";
 
 		try {
-			jp = f.createParser(fmJson);
+			jp = f.createJsonParser(fmJson);
 		} catch (JsonParseException e) {
 			throw new IOException(e);
 		}

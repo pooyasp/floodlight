@@ -29,7 +29,8 @@ import org.junit.Before;
 
 public class MemoryStorageTest extends StorageTest {
 
-    @Before
+    @Override
+	@Before
     public void setUp() throws Exception {
         storageSource = new MemoryStorageSource();
         restApi = new RestApiServer();

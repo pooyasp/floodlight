@@ -283,7 +283,7 @@ public class OFActionListSerializer extends JsonSerializer<List<OFAction>> {
                 else if (((OFActionSetField)a).getField() instanceof OFOxmMetadata) {
                 	sb.append(MatchUtils.STR_METADATA).append("=").append(((OFOxmMetadata) ((OFActionSetField) a).getField()).getValue().getValue().getValue()); 
                 } else {
-                    logger.error("Could not decode Set-Field action field: {}", ((OFActionSetField) a));
+                    logger.error("Could not decode Set-Field action field: {}", (a));
                 }
             } // end switch over action type
             pos++;

@@ -60,7 +60,7 @@ public class OFMessageDecoder extends FrameDecoder {
             // This check avoids that from reading corrupted frames
             return null;
         }
-
+        
         List<OFMessage> messageList = new ArrayList<OFMessage>();
         for (;;) {
             OFMessage message = reader.readFrom(buffer);

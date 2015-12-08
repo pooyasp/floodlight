@@ -188,7 +188,7 @@ public class ControllerTest extends FloodlightTestCase {
         byte[] testPacketSerialized = testPacket.serialize();
 
         // The specific factory can be obtained from the switch, but we don't have one
-        pi = (OFPacketIn) factory.buildPacketIn()
+        pi = factory.buildPacketIn()
                 .setBufferId(OFBufferId.NO_BUFFER)
                 .setInPort(OFPort.of(1))
                 .setData(testPacketSerialized)
@@ -384,7 +384,7 @@ public class ControllerTest extends FloodlightTestCase {
         verify(test2);
         verify(test3);
 
-        OFFlowMod fm = (OFFlowMod) factory.buildFlowModify().build();
+        OFFlowMod fm = factory.buildFlowModify().build();
 
         //------------------
         // Test FlowMod handling: all listeners return CONTINUE

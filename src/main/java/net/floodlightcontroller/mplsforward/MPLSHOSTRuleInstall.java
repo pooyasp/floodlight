@@ -81,7 +81,7 @@ public class MPLSHOSTRuleInstall implements IFloodlightModule, IDeviceListener {
 	public void init(FloodlightModuleContext context) throws FloodlightModuleException {
 	    this.floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
 		this.deviceService = context.getServiceImpl(IDeviceService.class);
-		this.logger = LoggerFactory.getLogger(MPLSHOSTRuleInstall.class);
+		MPLSHOSTRuleInstall.logger = LoggerFactory.getLogger(MPLSHOSTRuleInstall.class);
 		this.switchService = context.getServiceImpl(IOFSwitchService.class);
 		this.messageDamper = new OFMessageDamper(10000, EnumSet.of(OFType.FLOW_MOD), 250);
 		
@@ -141,7 +141,7 @@ public class MPLSHOSTRuleInstall implements IFloodlightModule, IDeviceListener {
 			fmb.setMatch(mb.build()) // was match w/o modifying input port
 			.setActions(actions)
 			.setIdleTimeout(0)
-			.setTableId(TableId.of(5))
+			//.setTableId(TableId.of(5))
 			.setBufferId(OFBufferId.NO_BUFFER)
 			.setCookie(cookie)
 			.setOutPort(outPort)

@@ -64,7 +64,8 @@ public class Hub implements IFloodlightModule, IOFMessageListener {
         return Hub.class.getPackage().getName();
     }
 
-    public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
+    @Override
+	public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
     	OFMessage outMessage;
     	HubType ht = HubType.USE_PACKET_OUT;
     	switch (ht) {

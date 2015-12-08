@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.projectfloodlight.openflow.types.DatapathId;
 import org.projectfloodlight.openflow.types.OFPort;
-import org.projectfloodlight.openflow.types.U64;
 
 public class Link implements Comparable<Link> {
     @JsonProperty("src-switch")
@@ -32,15 +31,13 @@ public class Link implements Comparable<Link> {
     private DatapathId dst;
     @JsonProperty("dst-port")
     private OFPort dstPort;
-    @JsonProperty("latency") 
-    private U64 latency; /* we intentionally exclude the latency from hashcode and equals */
 
-    public Link(DatapathId srcId, OFPort srcPort, DatapathId dstId, OFPort dstPort, U64 latency) {
+
+    public Link(DatapathId srcId, OFPort srcPort, DatapathId dstId, OFPort dstPort) {
         this.src = srcId;
         this.srcPort = srcPort;
         this.dst = dstId;
         this.dstPort = dstPort;
-        this.latency = latency;
     }
 
     /*
@@ -66,10 +63,6 @@ public class Link implements Comparable<Link> {
     public OFPort getDstPort() {
         return dstPort;
     }
-    
-    public U64 getLatency() {
-    	return latency;
-    }
 
     public void setSrc(DatapathId src) {
         this.src = src;
@@ -86,10 +79,6 @@ public class Link implements Comparable<Link> {
     public void setDstPort(OFPort dstPort) {
         this.dstPort = dstPort;
     }
-    
-    public void setLatency(U64 latency) {
-    	this.latency = latency;
-    }
 
     @Override
     public int hashCode() {
@@ -99,7 +88,7 @@ public class Link implements Comparable<Link> {
         result = prime * result + dstPort.getPortNumber();
         result = prime * result + (int) (src.getLong() ^ (src.getLong() >>> 32));
         result = prime * result + srcPort.getPortNumber();
-        return result; /* do not include latency */
+        return result;
     }
 
     @Override
@@ -119,7 +108,7 @@ public class Link implements Comparable<Link> {
             return false;
         if (!srcPort.equals(other.srcPort))
             return false;
-        return true; /* do not include latency */
+        return true;
     }
 
 
@@ -131,8 +120,6 @@ public class Link implements Comparable<Link> {
                 + ", dst=" + this.dst.toString()
                 + ", inPort="
                 + dstPort.toString()
-                + ", latency="
-                + String.valueOf(latency.getValue())
                 + "]";
     }
     
@@ -146,18 +133,16 @@ public class Link implements Comparable<Link> {
     @Override
     public int compareTo(Link a) {
         // compare link based on natural ordering - src id, src port, dst id, dst port
-        int srcComp = this.getSrc().compareTo(a.getSrc());
-        if (srcComp != 0)
-            return srcComp;
+        if (this.getSrc() != a.getSrc())
+            return (int) (this.getSrc().getLong() - a.getSrc().getLong());
         
-        int srcPortComp = this.getSrcPort().compareTo(a.getSrcPort());
-        if (srcPortComp != 0)
-            return srcPortComp;
-            
-        int dstComp = this.getDst().compareTo(a.getDst());
-        if (dstComp != 0)
-            return dstComp;
+        if (this.getSrcPort() != a.getSrcPort())
+            return (int) (this.getSrc().getLong() - a.getSrc().getLong());
         
-        return this.getDstPort().compareTo(a.getDstPort());
+        if (this.getDst() != a.getDst())
+            return (int) (this.getDst().getLong() - a.getDst().getLong());
+        
+        return this.getDstPort().getPortNumber() - a.getDstPort().getPortNumber();
     }
 }
+

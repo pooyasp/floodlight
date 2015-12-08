@@ -27,7 +27,6 @@ import org.projectfloodlight.openflow.types.OFPort;
 
 import net.floodlightcontroller.core.IOFSwitch;
 import net.floodlightcontroller.core.module.IFloodlightService;
-import net.floodlightcontroller.linkdiscovery.internal.LinkInfo;
 import net.floodlightcontroller.routing.Link;
 import net.floodlightcontroller.topology.NodePortTuple;
 

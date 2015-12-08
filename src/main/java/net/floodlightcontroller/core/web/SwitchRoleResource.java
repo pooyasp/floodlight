@@ -106,7 +106,7 @@ public class SwitchRoleResource extends ServerResource {
 
 		try {
 			try {
-				jp = f.createParser(json);
+				jp = f.createJsonParser(json);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

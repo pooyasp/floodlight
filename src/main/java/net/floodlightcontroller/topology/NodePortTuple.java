@@ -18,6 +18,9 @@ package net.floodlightcontroller.topology;
 
 import net.floodlightcontroller.core.web.serializers.DPIDSerializer;
 
+//Hossein
+import net.floodlightcontroller.mplsforward.*;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -31,7 +34,7 @@ import org.projectfloodlight.openflow.types.OFPort;
  * @author srini
  */
 
-public class NodePortTuple implements Comparable<NodePortTuple> {
+public class NodePortTuple extends Link implements Comparable<NodePortTuple> {
     protected DatapathId nodeId; // switch DPID
     protected OFPort portId; // switch port id
 
@@ -61,7 +64,8 @@ public class NodePortTuple implements Comparable<NodePortTuple> {
         this.portId = portId;
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
         return "[id=" + nodeId.toString() + ", port=" + portId.toString() + "]";
     }
 

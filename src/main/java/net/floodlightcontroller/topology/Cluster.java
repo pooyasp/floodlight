@@ -84,7 +84,8 @@ public class Cluster {
         return (this.id.equals(other.id));
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
         return "[Cluster id=" + id.toString() + ", " + links.keySet() + "]";
     }
 }

@@ -136,7 +136,7 @@ public class ACLRuleResource extends ServerResource {
 		JsonParser jp;
 
 		try {
-			jp = f.createParser(json);
+			jp = f.createJsonParser(json);
 		} catch (JsonParseException e) {
 			throw new IOException(e);
 		}

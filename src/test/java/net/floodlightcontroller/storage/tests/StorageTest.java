@@ -102,7 +102,8 @@ public abstract class StorageTest extends FloodlightTestCase {
     }
     
     class PersonRowMapper implements IRowMapper {
-        public Object mapRow(IResultSet resultSet) {
+        @Override
+		public Object mapRow(IResultSet resultSet) {
             String ssn = resultSet.getString(PERSON_SSN);
             String firstName = resultSet.getString(PERSON_FIRST_NAME);
             String lastName = resultSet.getString(PERSON_LAST_NAME);
@@ -142,7 +143,8 @@ public abstract class StorageTest extends FloodlightTestCase {
         }
     }
     
-    public void setUp() throws Exception {
+    @Override
+	public void setUp() throws Exception {
         super.setUp();
         Set<String> indexedColumnNames = new HashSet<String>();
         indexedColumnNames.add(PERSON_FIRST_NAME);
@@ -180,7 +182,7 @@ public abstract class StorageTest extends FloodlightTestCase {
                 else if (expectedObject instanceof byte[])
                     assertTrue(Arrays.equals((byte[])expectedObject, resultSet.getByteArray(columnName)));
                 else if (expectedObject instanceof String)
-                    assertEquals((String)expectedObject, resultSet.getString(columnName));
+                    assertEquals(expectedObject, resultSet.getString(columnName));
                 else
                     assertTrue("Unexpected column value type", false);
             }

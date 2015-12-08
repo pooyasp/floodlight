@@ -31,7 +31,8 @@ public class LRUHashMap<K, V> extends LinkedHashMap<K, V> {
         this.capacity = capacity;
     }
     
-    protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
+    @Override
+	protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
        return size() > capacity;
     }
 

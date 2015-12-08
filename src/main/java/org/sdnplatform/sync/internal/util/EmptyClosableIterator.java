@@ -7,15 +7,18 @@ import org.sdnplatform.sync.IClosableIterator;
 
 public class EmptyClosableIterator<T> implements IClosableIterator<T> {
     
-    public boolean hasNext() {
+    @Override
+	public boolean hasNext() {
         return false;
     }
 
-    public T next() {
+    @Override
+	public T next() {
         throw new NoSuchElementException();
     }
 
-    public void remove() {
+    @Override
+	public void remove() {
         throw new NoSuchElementException();
     }
 

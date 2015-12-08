@@ -3,7 +3,6 @@ package net.floodlightcontroller.testmodule;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-
 import org.projectfloodlight.openflow.protocol.OFFactory;
 import org.projectfloodlight.openflow.protocol.OFFlowMod;
 import org.projectfloodlight.openflow.protocol.OFPortDesc;
@@ -102,6 +101,8 @@ public class TestModule implements IFloodlightModule, IOFSwitchListener {
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}*/
+		
+		
 		
 		OFFactory f =factory;
         Match.Builder mb =f.buildMatch();
@@ -237,12 +238,7 @@ public class TestModule implements IFloodlightModule, IOFSwitchListener {
         //actions.add(factory.actions().pushVlan(EthType.IPv4));
         //actions.add(factory.actions().setField(factory.oxms().ipProto(IpProtocol.TCP))); // can't set protocol...makes sense */
         
-        /* MPLS TESTS mb.setExact(MatchField.ETH_TYPE, EthType.MPLS_MULTICAST);
-        mb.setExact(MatchField.MPLS_LABEL, U32.of(18));
-        mb.setExact(MatchField.MPLS_TC, U8.of((short)4));
-        actions.add(factory.actions().output(OFPort.LOCAL, Integer.MAX_VALUE));
-        actions.add(factory.actions().setField(factory.oxms().mplsLabel(U32.ZERO)));
-        actions.add(factory.actions().setField(factory.oxms().mplsTc(U8.ZERO))); */
+ 
         
         /* METADATA TEST 
         mb.setExact(MatchField.METADATA, OFMetadata.ofRaw(1)); 

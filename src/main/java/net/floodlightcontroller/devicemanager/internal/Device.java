@@ -282,7 +282,7 @@ public class Device implements IDevice {
 			if (!deviceManager.isValidAttachmentPoint(ap.getSw(), ap.getPort()))
 				continue;
 
-			DatapathId id = deviceManager.topology.getOpenflowDomainId(ap.getSw());
+			DatapathId id = deviceManager.topology.getL2DomainId(ap.getSw());
 			apMap.put(id, ap);
 		}
 
@@ -345,7 +345,7 @@ public class Device implements IDevice {
 		Set<DatapathId> visitedIslands = new HashSet<DatapathId>();
 			
 		for (AttachmentPoint ap : oldAPList) {
-			DatapathId id = topology.getOpenflowDomainId(ap.getSw());
+			DatapathId id = topology.getL2DomainId(ap.getSw());
 			AttachmentPoint trueAP = apMap.get(id);
 
 			if (trueAP == null) {
@@ -367,7 +367,7 @@ public class Device implements IDevice {
 		 * has not expired, add them as duplicates to the list.
 		 */
 		for (AttachmentPoint ap : oldAPList) {				
-			DatapathId id = topology.getOpenflowDomainId(ap.getSw());
+			DatapathId id = topology.getL2DomainId(ap.getSw());
 			if (visitedIslands.contains(id)) {
 				if (ap.getLastSeen().getTime() > timeThreshold) {
 					dupAPs.add(ap);
@@ -472,7 +472,7 @@ public class Device implements IDevice {
 			return true;
 		}
 
-		DatapathId id = topology.getOpenflowDomainId(sw);
+		DatapathId id = topology.getL2DomainId(sw);
 		AttachmentPoint oldAP = apMap.get(id);
 
 		if (oldAP == null) { // No attachment on this L2 domain.

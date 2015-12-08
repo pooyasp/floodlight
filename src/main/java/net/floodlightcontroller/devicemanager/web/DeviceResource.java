@@ -26,7 +26,8 @@ import org.restlet.resource.Get;
  * Resource for querying and displaying devices that exist in the system
  */
 public class DeviceResource extends AbstractDeviceResource {
-    @Get("json")
+    @Override
+	@Get("json")
     public Iterator<? extends IDevice> getDevices() {
         return super.getDevices();
     }

@@ -157,7 +157,8 @@ public abstract class AbstractSyncManager
      * Get the local ID of the local node
      * @return the node ID
      */
-    public abstract short getLocalNodeId();
+    @Override
+	public abstract short getLocalNodeId();
 
     /**
      * Add a listener to the specified store

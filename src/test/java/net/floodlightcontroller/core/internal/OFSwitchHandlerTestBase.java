@@ -651,7 +651,7 @@ public abstract class OFSwitchHandlerTestBase {
 
 		// prepare mocks and inject the role reply message
 		reset(sw);
-		sw.setAttribute(IOFSwitchBackend.SWITCH_SUPPORTS_NX_ROLE, true);
+		sw.setAttribute(IOFSwitch.SWITCH_SUPPORTS_NX_ROLE, true);
 		expectLastCall().once();
 		sw.setControllerRole(OFControllerRole.ROLE_SLAVE);
 		expectLastCall().once();

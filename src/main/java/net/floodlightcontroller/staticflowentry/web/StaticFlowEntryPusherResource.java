@@ -27,6 +27,8 @@ import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.floodlightcontroller.core.annotations.LogMessageCategory;
+import net.floodlightcontroller.core.annotations.LogMessageDoc;
 import net.floodlightcontroller.staticflowentry.StaticFlowEntries;
 import net.floodlightcontroller.staticflowentry.StaticFlowEntryPusher;
 import net.floodlightcontroller.storage.IStorageSourceService;
@@ -37,6 +39,7 @@ import net.floodlightcontroller.util.MatchUtils;
  * @author alexreimers
  *
  */
+@LogMessageCategory("Static Flow Pusher")
 public class StaticFlowEntryPusherResource extends ServerResource {
 	protected static Logger log = LoggerFactory.getLogger(StaticFlowEntryPusherResource.class);
 
@@ -279,6 +282,10 @@ public class StaticFlowEntryPusherResource extends ServerResource {
 	 * @return A string status message
 	 */
 	@Post
+	@LogMessageDoc(level="ERROR",
+	message="Error parsing push flow mod request: {request}",
+	explanation="An invalid request was sent to static flow pusher",
+	recommendation="Fix the format of the static flow mod request")
 	public String store(String fmJson) {
 		IStorageSourceService storageSource =
 				(IStorageSourceService)getContext().getAttributes().
@@ -324,6 +331,10 @@ public class StaticFlowEntryPusherResource extends ServerResource {
 	}
 
 	@Delete
+	@LogMessageDoc(level="ERROR",
+	message="Error deleting flow mod request: {request}",
+	explanation="An invalid delete request was sent to static flow pusher",
+	recommendation="Fix the format of the static flow mod request")
 	public String del(String fmJson) {
 		IStorageSourceService storageSource =
 				(IStorageSourceService)getContext().getAttributes().

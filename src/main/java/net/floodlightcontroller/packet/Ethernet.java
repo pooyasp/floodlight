@@ -205,7 +205,8 @@ public class Ethernet extends BasePacket {
         return this;
     }
 
-    public byte[] serialize() {
+    @Override
+	public byte[] serialize() {
         byte[] payloadData = null;
         if (payload != null) {
             payload.setParent(this);

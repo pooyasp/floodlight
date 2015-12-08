@@ -28,7 +28,8 @@ public class LoadedModuleLoaderResource extends ModuleLoaderResource {
 	 * to Floodlight.
 	 * @return Information about all modules available.
 	 */
-    @Get("json")
+    @Override
+	@Get("json")
     public Map<String, Object> retrieve() {
     	return retrieveInternal(false);
     }

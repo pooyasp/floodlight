@@ -49,7 +49,8 @@ public enum DHCPPacketType {
         return value;
     }
     
-    public String toString(){
+    @Override
+	public String toString(){
         switch (value) {
             case 1:
                 return "DHCPDISCOVER";

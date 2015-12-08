@@ -464,7 +464,8 @@ public class NoSqlResultSet implements IResultSet {
     }
 
     
-    public void setNull(String columnName)
+    @Override
+	public void setNull(String columnName)
     {
         addRowUpdate(columnName, null);
     }

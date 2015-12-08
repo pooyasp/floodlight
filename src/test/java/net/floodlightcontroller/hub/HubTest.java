@@ -67,7 +67,8 @@ public class HubTest extends FloodlightTestCase {
     private MockFloodlightProvider mockFloodlightProvider;
     private Hub hub;
     
-    @Before
+    @Override
+	@Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -93,7 +94,7 @@ public class HubTest extends FloodlightTestCase {
         this.testPacketSerialized = testPacket.serialize();
 
         // Build the PacketIn
-        this.packetIn = (OFPacketIn) OFFactories.getFactory(OFVersion.OF_13).buildPacketIn()
+        this.packetIn = OFFactories.getFactory(OFVersion.OF_13).buildPacketIn()
             .setBufferId(OFBufferId.NO_BUFFER)
             .setMatch(OFFactories.getFactory(OFVersion.OF_13).buildMatch()
             		.setExact(MatchField.IN_PORT, OFPort.of(1))

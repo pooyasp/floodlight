@@ -127,8 +127,8 @@ public class LoadBalancer implements IFloodlightModule,
             new Comparator<SwitchPort>() {
                 @Override
                 public int compare(SwitchPort d1, SwitchPort d2) {
-                    DatapathId d1ClusterId = topologyService.getOpenflowDomainId(d1.getSwitchDPID());
-                    DatapathId d2ClusterId = topologyService.getOpenflowDomainId(d2.getSwitchDPID());
+                    DatapathId d1ClusterId = topologyService.getL2DomainId(d1.getSwitchDPID());
+                    DatapathId d2ClusterId = topologyService.getL2DomainId(d2.getSwitchDPID());
                     return d1ClusterId.compareTo(d2ClusterId);
                 }
             };
@@ -383,7 +383,7 @@ public class LoadBalancer implements IFloodlightModule,
         // srcDevice and/or dstDevice is null, no route can be pushed
         if (srcDevice == null || dstDevice == null) return;
         
-        DatapathId srcIsland = topologyService.getOpenflowDomainId(sw.getId());
+        DatapathId srcIsland = topologyService.getL2DomainId(sw.getId());
 
         if (srcIsland == null) {
             log.debug("No openflow island found for source {}/{}", 
@@ -397,7 +397,7 @@ public class LoadBalancer implements IFloodlightModule,
         boolean on_same_if = false;
         for (SwitchPort dstDap : dstDevice.getAttachmentPoints()) {
             DatapathId dstSwDpid = dstDap.getSwitchDPID();
-            DatapathId dstIsland = topologyService.getOpenflowDomainId(dstSwDpid);
+            DatapathId dstIsland = topologyService.getL2DomainId(dstSwDpid);
             if ((dstIsland != null) && dstIsland.equals(srcIsland)) {
                 on_same_island = true;
                 if ((sw.getId().equals(dstSwDpid)) && ((pi.getVersion().compareTo(OFVersion.OF_12) < 0 ? pi.getInPort() : pi.getMatch().get(MatchField.IN_PORT)).equals(dstDap.getPort()))) {
@@ -441,9 +441,9 @@ public class LoadBalancer implements IFloodlightModule,
             SwitchPort srcDap = srcDaps[iSrcDaps];
             SwitchPort dstDap = dstDaps[iDstDaps];
             DatapathId srcCluster = 
-                    topologyService.getOpenflowDomainId(srcDap.getSwitchDPID());
+                    topologyService.getL2DomainId(srcDap.getSwitchDPID());
             DatapathId dstCluster = 
-                    topologyService.getOpenflowDomainId(dstDap.getSwitchDPID());
+                    topologyService.getL2DomainId(dstDap.getSwitchDPID());
 
             int srcVsDest = srcCluster.compareTo(dstCluster);
             if (srcVsDest == 0) {
@@ -512,8 +512,7 @@ public class LoadBalancer implements IFloodlightModule,
                fmb.setPriority(FlowModUtils.PRIORITY_MAX);
                
                if (inBound) {
-                   entryName = "inbound-vip-"+ member.vipId+"-client-"+client.ipAddress
-                		   +"-srcport-"+client.srcPort+"-dstport-"+client.targetPort
+                   entryName = "inbound-vip-"+ member.vipId+"-client-"+client.ipAddress+"-port-"+client.targetPort
                            +"-srcswitch-"+path.get(0).getNodeId()+"-sw-"+sw;
                    mb.setExact(MatchField.ETH_TYPE, EthType.IPv4)
                    .setExact(MatchField.IP_PROTO, client.nw_proto)
@@ -546,8 +545,7 @@ public class LoadBalancer implements IFloodlightModule,
                 	   actions.add(switchService.getSwitch(path.get(i+1).getNodeId()).getOFFactory().actions().output(path.get(i+1).getPortId(), Integer.MAX_VALUE));
                    }
                } else {
-                   entryName = "outbound-vip-"+ member.vipId+"-client-"+client.ipAddress
-                		   +"-srcport-"+client.srcPort+"-dstport-"+client.targetPort
+                   entryName = "outbound-vip-"+ member.vipId+"-client-"+client.ipAddress+"-port-"+client.targetPort
                            +"-srcswitch-"+path.get(0).getNodeId()+"-sw-"+sw;
                    mb.setExact(MatchField.ETH_TYPE, EthType.IPv4)
                    .setExact(MatchField.IP_PROTO, client.nw_proto)

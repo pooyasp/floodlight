@@ -116,22 +116,26 @@ public class StoreUtils {
         keys(final IClosableIterator<Entry<K, V>> values) {
         return new IClosableIterator<K>() {
 
-            public void close() {
+            @Override
+			public void close() {
                 values.close();
             }
 
-            public boolean hasNext() {
+            @Override
+			public boolean hasNext() {
                 return values.hasNext();
             }
 
-            public K next() {
+            @Override
+			public K next() {
                 Entry<K, V> value = values.next();
                 if(value == null)
                     return null;
                 return value.getKey();
             }
 
-            public void remove() {
+            @Override
+			public void remove() {
                 values.remove();
             }
 

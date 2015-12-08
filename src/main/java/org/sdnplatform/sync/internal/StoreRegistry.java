@@ -10,6 +10,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sql.ConnectionPoolDataSource;
 
+import net.floodlightcontroller.core.annotations.LogMessageDoc;
+
 import org.sdnplatform.sync.Versioned;
 import org.sdnplatform.sync.ISyncService.Scope;
 import org.sdnplatform.sync.error.PersistException;
@@ -136,6 +138,11 @@ public class StoreRegistry {
      * @param key the key
      * @param value the value
      */
+    @LogMessageDoc(level="ERROR",
+                   message="Failed to queue hint for store {storeName}",
+                   explanation="There was an error synchronizing data to " + 
+                               "remote nodes",
+                   recommendation=LogMessageDoc.REPORT_CONTROLLER_BUG)
     public void queueHint(String storeName, 
                           ByteArray key, Versioned<byte[]> value) {
         try {

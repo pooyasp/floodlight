@@ -73,7 +73,7 @@ public class FirewallSubnetMaskResource extends FirewallResourceBase {
 		JsonParser jp;
 
 		try {
-			jp = f.createParser(fmJson);
+			jp = f.createJsonParser(fmJson);
 		} catch (JsonParseException e) {
 			throw new IOException(e);
 		}

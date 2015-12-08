@@ -35,7 +35,6 @@ import org.projectfloodlight.openflow.protocol.OFStatsRequest;
 import org.projectfloodlight.openflow.types.DatapathId;
 import org.projectfloodlight.openflow.types.OFPort;
 import org.projectfloodlight.openflow.types.TableId;
-import org.projectfloodlight.openflow.types.U64;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -363,10 +362,5 @@ public interface IOFSwitch extends IOFMessageWriter {
      * @return
      */
 	short getNumTables();
- 
-	/**
-	 * Get the one-way latency from the switch to the controller.
-	 * @return milliseconds
-	 */
-	public U64 getLatency();
+    
 }

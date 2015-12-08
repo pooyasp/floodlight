@@ -38,7 +38,8 @@ public class NodePair {
         return max;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return "[" + new Long(min) + ", " + new Long(max) + "]";
     }
 

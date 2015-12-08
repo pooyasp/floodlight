@@ -135,7 +135,7 @@ public class FirewallRulesResource extends ServerResource {
 		JsonParser jp;
 		try {
 			try {
-				jp = f.createParser(fmJson);
+				jp = f.createJsonParser(fmJson);
 			} catch (JsonParseException e) {
 				throw new IOException(e);
 			}
@@ -223,10 +223,8 @@ public class FirewallRulesResource extends ServerResource {
 				else if (n.equalsIgnoreCase("src-ip")) {
 					if (!jp.getText().equalsIgnoreCase("ANY")) {
 						rule.any_nw_src = false;
-						if (rule.dl_type.equals(EthType.NONE)){
-							rule.any_dl_type = false;
-							rule.dl_type = EthType.IPv4;
-						}
+						rule.any_dl_type = false;
+						rule.dl_type = EthType.IPv4;
 						try {
 							rule.nw_src_prefix_and_mask = IPv4AddressWithMask.of(jp.getText());
 						} catch (IllegalArgumentException e) {
@@ -239,10 +237,8 @@ public class FirewallRulesResource extends ServerResource {
 				else if (n.equalsIgnoreCase("dst-ip")) {
 					if (!jp.getText().equalsIgnoreCase("ANY")) {
 						rule.any_nw_dst = false;
-						if (rule.dl_type.equals(EthType.NONE)){
-							rule.any_dl_type = false;
-							rule.dl_type = EthType.IPv4;
-						}
+						rule.any_dl_type = false;
+						rule.dl_type = EthType.IPv4;
 						try {
 							rule.nw_dst_prefix_and_mask = IPv4AddressWithMask.of(jp.getText());
 						} catch (IllegalArgumentException e) {

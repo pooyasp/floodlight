@@ -45,7 +45,8 @@ public class NullPktInProcessingTime
     private CumulativeTimeBucket ctb;
     private boolean inited = false;
     
-    public Collection<Class<? extends IFloodlightService>> getModuleServices() {
+    @Override
+	public Collection<Class<? extends IFloodlightService>> getModuleServices() {
         Collection<Class<? extends IFloodlightService>> l = 
                 new ArrayList<Class<? extends IFloodlightService>>();
         l.add(IPktInProcessingTimeService.class);

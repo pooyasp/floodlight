@@ -161,7 +161,8 @@ public class BSN extends BasePacket {
                 version == other.version);
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuffer sb = new StringBuffer("\n");
         sb.append("BSN packet");
         if (typeClassMap.containsKey(this.type))

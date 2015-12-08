@@ -30,6 +30,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import net.floodlightcontroller.core.annotations.LogMessageCategory;
+import net.floodlightcontroller.core.annotations.LogMessageDoc;
 import net.floodlightcontroller.core.module.FloodlightModuleContext;
 import net.floodlightcontroller.core.module.FloodlightModuleException;
 import net.floodlightcontroller.core.module.IFloodlightModule;
@@ -43,6 +45,8 @@ import net.floodlightcontroller.storage.web.StorageWebRoutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+@LogMessageCategory("System Database")
 public abstract class AbstractStorageSource 
 implements IStorageSourceService, IFloodlightModule {
 	protected static Logger logger = LoggerFactory.getLogger(AbstractStorageSource.class);
@@ -78,7 +82,12 @@ implements IStorageSourceService, IFloodlightModule {
 			"An unknown error occurred while executing asynchronous " +
 					"database operation";
 
+	@LogMessageDoc(level="ERROR",
+			message="Failure in asynchronous call to executeQuery",
+			explanation=DB_ERROR_EXPLANATION,
+			recommendation=LogMessageDoc.GENERIC_ACTION)
 	abstract class StorageCallable<V> implements Callable<V> {
+		@Override
 		public V call() {
 			try {
 				return doStorageOperation();
@@ -93,7 +102,12 @@ implements IStorageSourceService, IFloodlightModule {
 		abstract protected V doStorageOperation();
 	}
 
+	@LogMessageDoc(level="ERROR",
+			message="Failure in asynchronous call to updateRows",
+			explanation=DB_ERROR_EXPLANATION,
+			recommendation=LogMessageDoc.GENERIC_ACTION)
 	abstract class StorageRunnable implements Runnable {
+		@Override
 		public void run() {
 			try {
 				doStorageOperation();
@@ -195,6 +209,7 @@ implements IStorageSourceService, IFloodlightModule {
 	public Future<IResultSet> executeQueryAsync(final IQuery query) {
 		Future<IResultSet> future = executorService.submit(
 				new StorageCallable<IResultSet>() {
+					@Override
 					public IResultSet doStorageOperation() {
 						return executeQuery(query);
 					}
@@ -208,6 +223,7 @@ implements IStorageSourceService, IFloodlightModule {
 			final RowOrdering ordering) {
 		Future<IResultSet> future = executorService.submit(
 				new StorageCallable<IResultSet>() {
+					@Override
 					public IResultSet doStorageOperation() {
 						return executeQuery(tableName, columnNames,
 								predicate, ordering);
@@ -222,6 +238,7 @@ implements IStorageSourceService, IFloodlightModule {
 			final RowOrdering ordering, final IRowMapper rowMapper) {
 		Future<Object[]> future = executorService.submit(
 				new StorageCallable<Object[]>() {
+					@Override
 					public Object[] doStorageOperation() {
 						return executeQuery(tableName, columnNames, predicate,
 								ordering, rowMapper);
@@ -235,6 +252,7 @@ implements IStorageSourceService, IFloodlightModule {
 			final Map<String,Object> values) {
 		Future<?> future = executorService.submit(
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						insertRow(tableName, values);
 					}
@@ -246,6 +264,7 @@ implements IStorageSourceService, IFloodlightModule {
 	public Future<?> updateRowsAsync(final String tableName, final List<Map<String,Object>> rows) {
 		Future<?> future = executorService.submit(    
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						updateRows(tableName, rows);
 					}
@@ -258,6 +277,7 @@ implements IStorageSourceService, IFloodlightModule {
 			final IPredicate predicate, final Map<String,Object> values) {
 		Future<?> future = executorService.submit(    
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						updateMatchingRows(tableName, predicate, values);
 					}
@@ -270,6 +290,7 @@ implements IStorageSourceService, IFloodlightModule {
 			final Object rowKey, final Map<String,Object> values) {
 		Future<?> future = executorService.submit(
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						updateRow(tableName, rowKey, values);
 					}
@@ -282,6 +303,7 @@ implements IStorageSourceService, IFloodlightModule {
 			final Map<String,Object> values) {
 		Future<?> future = executorService.submit(
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						updateRow(tableName, values);
 					}
@@ -293,6 +315,7 @@ implements IStorageSourceService, IFloodlightModule {
 	public Future<?> deleteRowAsync(final String tableName, final Object rowKey) {
 		Future<?> future = executorService.submit(
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						deleteRow(tableName, rowKey);
 					}
@@ -304,6 +327,7 @@ implements IStorageSourceService, IFloodlightModule {
 	public Future<?> deleteRowsAsync(final String tableName, final Set<Object> rowKeys) {
 		Future<?> future = executorService.submit(
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						deleteRows(tableName, rowKeys);
 					}
@@ -315,6 +339,7 @@ implements IStorageSourceService, IFloodlightModule {
 	public Future<?> deleteMatchingRowsAsync(final String tableName, final IPredicate predicate) {
 		Future<?> future = executorService.submit(
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						deleteMatchingRows(tableName, predicate);
 					}
@@ -326,6 +351,7 @@ implements IStorageSourceService, IFloodlightModule {
 	public Future<?> getRowAsync(final String tableName, final Object rowKey) {
 		Future<?> future = executorService.submit(
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						getRow(tableName, rowKey);
 					}
@@ -337,6 +363,7 @@ implements IStorageSourceService, IFloodlightModule {
 	public Future<?> saveAsync(final IResultSet resultSet) {
 		Future<?> future = executorService.submit(
 				new StorageRunnable() {
+					@Override
 					public void doStorageOperation() {
 						resultSet.save();
 					}
@@ -447,6 +474,11 @@ implements IStorageSourceService, IFloodlightModule {
 		}
 	}
 
+	@LogMessageDoc(level="ERROR",
+			message="Exception caught handling storage notification",
+			explanation="An unknown error occured while trying to notify" +
+					" storage listeners",
+					recommendation=LogMessageDoc.GENERIC_ACTION)
 	protected synchronized void notifyListeners(StorageSourceNotification notification) {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Notifying storage listeneres: {}", notification);

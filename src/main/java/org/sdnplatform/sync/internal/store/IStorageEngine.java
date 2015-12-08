@@ -57,7 +57,8 @@ public interface IStorageEngine<K, V> extends IStore<K, V> {
      *
      * @return An iterator over the entries in this StorageEngine.
      */
-    public IClosableIterator<Entry<K,List<Versioned<V>>>> entries();
+    @Override
+	public IClosableIterator<Entry<K,List<Versioned<V>>>> entries();
 
     /**
      * Get an iterator over keys in the store.

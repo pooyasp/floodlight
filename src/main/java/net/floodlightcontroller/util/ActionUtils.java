@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.floodlightcontroller.core.annotations.LogMessageDoc;
+
 import org.projectfloodlight.openflow.protocol.OFFactories;
 import org.projectfloodlight.openflow.protocol.OFFlowMod;
 import org.projectfloodlight.openflow.protocol.OFVersion;
@@ -147,6 +149,10 @@ public class ActionUtils {
 	 * @param actions; A list of OFActions to encode into one string
 	 * @return A dpctl-style string of the actions
 	 */
+	@LogMessageDoc(level="ERROR",
+			message="Could not decode action {action}",
+			explanation="A static flow entry contained an invalid action",
+			recommendation=LogMessageDoc.REPORT_CONTROLLER_BUG)
 	public static String actionsToString(List<OFAction> actions, Logger log) {
 		StringBuilder sb = new StringBuilder();
 		for (OFAction a : actions) {
@@ -246,7 +252,7 @@ public class ActionUtils {
 				sb.append(STR_GROUP + "=" + Integer.toString(((OFActionGroup)a).getGroup().getGroupNumber()));
 				break;
 			case SET_FIELD:
-				log.debug("Got Set-Field action. Setting " + ((OFActionSetField)a));
+				log.debug("Got Set-Field action. Setting " + (a));
 				/* ARP */
 				if (((OFActionSetField)a).getField() instanceof OFOxmArpOp) {
 					sb.append(STR_FIELD_SET + "=" + MatchUtils.STR_ARP_OPCODE + MatchUtils.SET_FIELD_DELIM + Integer.toString(((OFOxmArpOp) ((OFActionSetField) a).getField()).getValue().getOpcode()));
@@ -329,7 +335,7 @@ public class ActionUtils {
 				else if (((OFActionSetField)a).getField() instanceof OFOxmMetadata) {
 					sb.append(STR_FIELD_SET + "=" + MatchUtils.STR_METADATA + MatchUtils.SET_FIELD_DELIM + Long.toString(((OFOxmMetadata) ((OFActionSetField) a).getField()).getValue().getValue().getValue())); 
 				} else {
-					log.error("Could not decode Set-Field action field: {}", ((OFActionSetField) a));
+					log.error("Could not decode Set-Field action field: {}", (a));
 				}
 				break;
 			default:
@@ -348,6 +354,10 @@ public class ActionUtils {
 	 * @param bigString The string containing all the actions
 	 * @param log A logger to log for errors.
 	 */
+	@LogMessageDoc(level="ERROR",
+			message="Unexpected action '{action}', '{subaction}'",
+			explanation="A static flow entry contained an invalid action",
+			recommendation=LogMessageDoc.REPORT_CONTROLLER_BUG)
 	public static void fromString(OFFlowMod.Builder fmb, String bigString, Logger log) {
 		List<OFAction> actions = new LinkedList<OFAction>();
 		if (bigString != null && !bigString.trim().isEmpty()) {
@@ -867,6 +877,10 @@ public class ActionUtils {
 	 * @param log
 	 * @return
 	 */
+	@LogMessageDoc(level="ERROR",
+			message="Invalid subaction: '{subaction}'",
+			explanation="A static flow entry contained an invalid subaction",
+			recommendation=LogMessageDoc.REPORT_CONTROLLER_BUG)
 	private static OFActionOutput decode_output(String actionToDecode, OFVersion version, Logger log) {
 		Matcher n = Pattern.compile("((all)|(controller)|(local)|(ingress-port)|(normal)|(flood))").matcher(actionToDecode);
 		OFActionOutput.Builder ab = OFFactories.getFactory(version).actions().buildOutput();

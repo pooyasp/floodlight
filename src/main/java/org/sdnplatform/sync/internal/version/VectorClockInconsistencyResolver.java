@@ -34,7 +34,8 @@ import com.google.common.collect.Lists;
 public class VectorClockInconsistencyResolver<T>
     implements IInconsistencyResolver<Versioned<T>> {
 
-    public List<Versioned<T>> resolveConflicts(List<Versioned<T>> items) {
+    @Override
+	public List<Versioned<T>> resolveConflicts(List<Versioned<T>> items) {
         int size = items.size();
         if(size <= 1)
             return items;

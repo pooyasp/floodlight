@@ -1,12 +1,11 @@
 package net.floodlightcontroller.core;
 
 import java.net.SocketAddress;
-import java.util.Date;
 
+import java.util.Date;
 import org.projectfloodlight.openflow.protocol.OFFactory;
 import org.projectfloodlight.openflow.types.DatapathId;
 import org.projectfloodlight.openflow.types.OFAuxId;
-import org.projectfloodlight.openflow.types.U64;
 
 
 /** Contract for an openflow connection to a switch.
@@ -59,9 +58,5 @@ public interface IOFConnection extends IOFMessageWriter {
      */
     boolean isConnected();
 
-	/**
-	 * Get the one-way latency from the switch to the controller.
-	 * @return milliseconds
-	 */
-	public U64 getLatency();
+
 }

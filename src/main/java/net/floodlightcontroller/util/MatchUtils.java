@@ -19,6 +19,7 @@ import org.projectfloodlight.openflow.types.IpDscp;
 import org.projectfloodlight.openflow.types.IpEcn;
 import org.projectfloodlight.openflow.types.IpProtocol;
 import org.projectfloodlight.openflow.types.MacAddress;
+import org.projectfloodlight.openflow.types.Masked;
 import org.projectfloodlight.openflow.types.OFBooleanValue;
 import org.projectfloodlight.openflow.types.OFMetadata;
 import org.projectfloodlight.openflow.types.OFPort;
@@ -446,7 +447,7 @@ public class MatchUtils {
 				if (dataMask.length == 1) {
 					mb.setExact(MatchField.VLAN_VID, OFVlanVidMatch.ofVlan(dataMask[0].contains("0x") ? Integer.valueOf(dataMask[0].replaceFirst("0x", ""), 16) : Integer.valueOf(dataMask[0])));
 				} else {
-					mb.setMasked(MatchField.VLAN_VID, OFVlanVidMatchWithMask.of(
+					mb.setMasked(MatchField.VLAN_VID, Masked.of(
 						OFVlanVidMatch.ofVlan(dataMask[0].contains("0x") ? Integer.valueOf(dataMask[0].replaceFirst("0x", ""), 16) : Integer.valueOf(dataMask[0])), 
 						OFVlanVidMatch.ofVlan(dataMask[1].contains("0x") ? Integer.valueOf(dataMask[1].replaceFirst("0x", ""), 16) : Integer.valueOf(dataMask[1]))));
 				}

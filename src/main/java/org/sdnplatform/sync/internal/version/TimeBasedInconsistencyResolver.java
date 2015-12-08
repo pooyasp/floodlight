@@ -31,7 +31,8 @@ import org.sdnplatform.sync.Versioned;
 public class TimeBasedInconsistencyResolver<T>
     implements IInconsistencyResolver<Versioned<T>> {
 
-    public List<Versioned<T>> resolveConflicts(List<Versioned<T>> items) {
+    @Override
+	public List<Versioned<T>> resolveConflicts(List<Versioned<T>> items) {
         if(items.size() <= 1) {
             return items;
         } else {

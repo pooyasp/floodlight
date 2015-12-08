@@ -16,6 +16,8 @@ import java.util.EnumSet;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import net.floodlightcontroller.core.IOFSwitch;
 import net.floodlightcontroller.core.IOFSwitchBackend;
 import net.floodlightcontroller.core.OFConnection;
 import net.floodlightcontroller.core.SwitchDescription;
@@ -156,7 +158,7 @@ public class OFSwitchHandshakeHandlerVer10Test extends OFSwitchHandlerTestBase {
                    CoreMatchers.instanceOf(WaitAppHandshakeState.class));
 
         reset(sw);
-        expect(sw.getAttribute(IOFSwitchBackend.SWITCH_SUPPORTS_NX_ROLE)).andReturn(true).anyTimes();
+        expect(sw.getAttribute(IOFSwitch.SWITCH_SUPPORTS_NX_ROLE)).andReturn(true).anyTimes();
         replay(sw);
 
         reset(roleManager);

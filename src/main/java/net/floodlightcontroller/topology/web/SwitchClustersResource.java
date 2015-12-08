@@ -55,7 +55,7 @@ public class SwitchClustersResource extends ServerResource {
             DatapathId clusterDpid =
                     (openflowDomain
                      ? topologyService.getOpenflowDomainId(dpid)
-                     :topologyService.getOpenflowDomainId(dpid));
+                     :topologyService.getL2DomainId(dpid));
             List<String> switchesInCluster = switchClusterMap.get(clusterDpid.toString());
             if (switchesInCluster != null) {
                 switchesInCluster.add(dpid.toString());

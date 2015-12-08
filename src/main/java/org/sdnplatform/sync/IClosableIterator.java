@@ -30,6 +30,7 @@ public interface IClosableIterator<T> extends Iterator<T>,Closeable {
     /**
      * Close the iterator
      */
-    public void close();
+    @Override
+	public void close();
 
 }

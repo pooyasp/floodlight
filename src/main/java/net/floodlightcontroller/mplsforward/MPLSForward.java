@@ -8,20 +8,21 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.projectfloodlight.openflow.protocol.OFFactories;
 import org.projectfloodlight.openflow.protocol.OFFlowMod;
-import org.projectfloodlight.openflow.protocol.OFFlowModCommand;
-import org.projectfloodlight.openflow.protocol.OFFlowRemoved;
 import org.projectfloodlight.openflow.protocol.OFMessage;
 import org.projectfloodlight.openflow.protocol.OFPacketIn;
+import org.projectfloodlight.openflow.protocol.OFPacketOut;
 import org.projectfloodlight.openflow.protocol.OFType;
 import org.projectfloodlight.openflow.protocol.OFVersion;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
+import org.projectfloodlight.openflow.protocol.action.OFActionNicira;
+import org.projectfloodlight.openflow.protocol.action.OFActionNiciraResubmit;
 import org.projectfloodlight.openflow.protocol.action.OFActionOutput;
 import org.projectfloodlight.openflow.protocol.instruction.OFInstruction;
 import org.projectfloodlight.openflow.protocol.instruction.OFInstructionGotoTable;
 import org.projectfloodlight.openflow.protocol.match.Match;
 import org.projectfloodlight.openflow.protocol.match.MatchField;
-import org.projectfloodlight.openflow.protocol.ver13.OFInstructionsVer13;
 import org.projectfloodlight.openflow.types.DatapathId;
 import org.projectfloodlight.openflow.types.EthType;
 import org.projectfloodlight.openflow.types.IPv4Address;
@@ -40,7 +41,6 @@ import org.projectfloodlight.openflow.types.VlanVid;
 import net.floodlightcontroller.core.FloodlightContext;
 import net.floodlightcontroller.core.IOFMessageListener;
 import net.floodlightcontroller.core.IOFSwitch;
-import net.floodlightcontroller.core.IListener.Command;
 import net.floodlightcontroller.core.internal.IOFSwitchService;
 import net.floodlightcontroller.core.module.FloodlightModuleContext;
 import net.floodlightcontroller.core.module.FloodlightModuleException;
@@ -57,15 +57,12 @@ import net.floodlightcontroller.packet.IPv4;
 import net.floodlightcontroller.packet.IPv6;
 import net.floodlightcontroller.packet.TCP;
 import net.floodlightcontroller.packet.UDP;
-import net.floodlightcontroller.routing.IRoutingDecision;
 import net.floodlightcontroller.routing.IRoutingService;
 import net.floodlightcontroller.routing.Route;
-import net.floodlightcontroller.routing.RoutingDecision;
 import net.floodlightcontroller.topology.NodePortTuple;
 import net.floodlightcontroller.util.OFMessageDamper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.Set;
 
@@ -129,7 +126,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 			throws FloodlightModuleException {
 		this.floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
 		this.edgeSwitchesIDs = new ConcurrentSkipListSet<DatapathId>();
-		this.logger = LoggerFactory.getLogger(MPLSForward.class);
+		MPLSForward.logger = LoggerFactory.getLogger(MPLSForward.class);
 		this.deviceService = context.getServiceImpl(IDeviceService.class);
 		this.routingService = context.getServiceImpl(IRoutingService.class);
 		this.switchService = context.getServiceImpl(IOFSwitchService.class);
@@ -149,7 +146,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 			public void run() {
 				installRules();
 			}
-		}, 15000);
+		}, 20000);
 
 	}
 
@@ -187,9 +184,9 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 	}
 
 	public void pushRouteForEdgeSwitch(Route route) {
-		logger.info("HOSSEIN_POOYA_YOLO_SWAG_BOOTY420_PushROute");
+		logger.info("HOSSEIN_POOYA_PushROute");
 		List<NodePortTuple> switchPortList = route.getPath();
-		int mplsId = (int)(long)(switchPortList.get(switchPortList.size() -1 ).getNodeId()).getLong();
+		int mplsId = (int)(switchPortList.get(switchPortList.size() -1 ).getNodeId()).getLong();
 		U64 cookie = AppCookie.makeCookie(MPLS_FORWARD_INSTALLATION, 0);
 
 
@@ -205,7 +202,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 			OFActionOutput.Builder aob = sw.getOFFactory().actions().buildOutput();
 
 			List<OFAction> actions = new ArrayList<OFAction>();
-
+			
 			mb.setExact(MatchField.ETH_TYPE, EthType.MPLS_UNICAST);
 			mb.setExact(MatchField.MPLS_LABEL, U32.of(mplsId));
 			mb.setExact(MatchField.MPLS_TC, U8.of((short)4)); 
@@ -214,6 +211,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 			OFPort outPort = switchPortList.get(indx).getPortId();
 
 			aob.setPort(outPort);
+			
 
 			actions.add(aob.build());
 			aob.setMaxLen(Integer.MAX_VALUE);
@@ -225,12 +223,12 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 			// compile
 			fmb.setMatch(mb.build()) // was match w/o modifying input port
 			.setActions(actions)
-			.setIdleTimeout(100)
-			.setHardTimeout(150)
+			.setIdleTimeout(0)
+			.setHardTimeout(0)
 			.setBufferId(OFBufferId.NO_BUFFER)
 			.setCookie(cookie)
 			.setOutPort(outPort)
-			.setPriority(1);
+			.setPriority(10);
 
 			try {
 				if (logger.isTraceEnabled()) {
@@ -258,7 +256,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 
 		}
 
-		//Last switch: pop MPLS
+		//Last switch: pop MPLS, resubmit
 
 		DatapathId switchDPID = switchPortList.get(switchPortList.size()-1).getNodeId();
 		IOFSwitch sw = switchService.getSwitch(switchDPID);
@@ -267,6 +265,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 		OFFlowMod.Builder fmb = sw.getOFFactory().buildFlowAdd();
 		OFActionOutput.Builder aob = sw.getOFFactory().actions().buildOutput();
 		List<OFAction> actions = new ArrayList<OFAction>();
+		
 
 		mb.setExact(MatchField.ETH_TYPE, EthType.MPLS_UNICAST);
 		mb.setExact(MatchField.MPLS_LABEL, U32.of(mplsId));
@@ -280,22 +279,27 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 		actions.add(sw.getOFFactory().actions().popMpls(EthType.IPv4));
 
 		//aob.setMaxLen(Integer.MAX_VALUE);
-
+		OFActionNiciraResubmit.Builder ofnicr = OFFactories.getFactory(OFVersion.OF_13).actions().buildNiciraResubmit();
+		ofnicr.setTable((short)(0));
+		actions.add(ofnicr.build());
+		
 		List<OFInstruction> instructions = new ArrayList<OFInstruction>();
-		OFInstructionGotoTable.Builder ib = sw.getOFFactory().instructions().buildGotoTable();
-		ib.setTableId(TableId.of(5)); //I have a bad feeling about this
-		instructions.add(ib.build());
+
+		//this is to goto table 5
+		//OFInstructionGotoTable.Builder ib = sw.getOFFactory().instructions().buildGotoTable();
+		//ib.setTableId(TableId.of(5)); //I have a bad feeling about this
+		//instructions.add(ib.build());
 		instructions.add(sw.getOFFactory().instructions().applyActions(actions));
 
-
+		
 		fmb.setMatch(mb.build()) // was match w/o modifying input port
 		.setActions(actions)
-		.setIdleTimeout(100)
+		.setIdleTimeout(0)
 		.setInstructions(instructions)
-		.setHardTimeout(150)
+		.setHardTimeout(0)
 		.setBufferId(OFBufferId.NO_BUFFER)
 		.setCookie(cookie)
-		.setPriority(1);
+		.setPriority(10);
 		try {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Pushing Route flowmod routeIndx={} " +
@@ -336,8 +340,6 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 		
 		IDevice dstDevice = IDeviceService.fcStore.get(cntx, IDeviceService.CONTEXT_DST_DEVICE);
 
-		
-
 		//IDevice dstDevice = deviceService.Device(dstMac.getLong());
 		
 		logger.info("inja tu doForwardFlow "  +dstDevice) ;
@@ -358,6 +360,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 				DatapathId dstSwDpid = dstDap.getSwitchDPID();
 				if (sw.getId().equals(dstSwDpid) && inPort.equals(dstDap.getPort())) {
 					on_same_if = true;
+					System.err.println("kar nabayad be inja miresid!! :( (same switch)");
 				}
 				break;
 			}
@@ -373,9 +376,8 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 			OFActionOutput.Builder aob = sw.getOFFactory().actions().buildOutput();
 			List<OFAction> actions = new ArrayList<OFAction>();
 
-			int mplsTag = (int)(long)(dstDap.getSwitchDPID()).getLong();
+			int mplsTag = (int)(dstDap.getSwitchDPID()).getLong();
 			
-
 			Route route =
 					routingService.getRoute(srcDap.getSwitchDPID(), 
 							srcDap.getPort(),
@@ -428,7 +430,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 				//if (sw.getId().equals(pinSwitch)) {
 				// TODO: Instead of doing a packetOut here we could also
 				// send a flowMod with bufferId set....
-				//pushPacket(sw, pi, false, outPort, cntx);
+				pushPacket(sw, pi, false, outPort, mplsTag,cntx);
 				//srcSwitchIncluded = true;
 				//}
 			} catch (IOException e) {
@@ -547,7 +549,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 		
 		MacAddress srcMac = eth.getSourceMACAddress();
 		MacAddress dstMac = eth.getDestinationMACAddress();
-		logger.info("received message src mac : " + srcMac + " destination mac:" +dstMac );
+		//logger.info("received message src mac : " + srcMac + " destination mac:" +dstMac );
 		if (eth.getEtherType() == EthType.IPv4) { /* shallow check for equality is okay for EthType */
 			IPv4 ip = (IPv4) eth.getPayload();
 			IPv4Address srcIp = ip.getSourceAddress();
@@ -558,7 +560,7 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 		
 		if (eth.isBroadcast() || eth.isMulticast()) {
 			//doFlood(sw, pi, cntx);
-			logger.info("INO NABAYAD BEBINIM", pi);
+			//logger.info("INO NABAYAD BEBINIM", pi);
 		}
 		else
 			doForwardFlow(sw, pi, cntx, false);
@@ -624,4 +626,74 @@ public class MPLSForward implements IOFMessageListener, IFloodlightModule {
 	}
 
 
+	/**
+	 * Pushes a packet-out to a switch.  The assumption here is that
+	 * the packet-in was also generated from the same switch.  Thus, if the input
+	 * port of the packet-in and the outport are the same, the function will not
+	 * push the packet-out.
+	 * @param sw        switch that generated the packet-in, and from which packet-out is sent
+	 * @param pi        packet-in
+	 * @param useBufferId  if true, use the bufferId from the packet in and
+	 * do not add the packetIn's payload. If false set bufferId to
+	 * BUFFER_ID_NONE and use the packetIn's payload
+	 * @param outport   output port
+	 * @param cntx      context of the packet
+	 */
+	protected void pushPacket(IOFSwitch sw, OFPacketIn pi, boolean useBufferId,
+			OFPort outport, int MPLSId,FloodlightContext cntx) {
+
+		if (pi == null) {
+			return;
+		}
+
+		// The assumption here is (sw) is the switch that generated the
+		// packet-in. If the input port is the same as output port, then
+		// the packet-out should be ignored.
+		if ((pi.getVersion().compareTo(OFVersion.OF_12) < 0 ? pi.getInPort() : pi.getMatch().get(MatchField.IN_PORT)).equals(outport)) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Attempting to do packet-out to the same " +
+						"interface as packet-in. Dropping packet. " +
+						" SrcSwitch={}, pi={}",
+						new Object[]{sw, pi});
+				return;
+			}
+		}
+
+		if (logger.isTraceEnabled()) {
+			logger.trace("PacketOut srcSwitch={} pi={}",
+					new Object[] {sw, pi});
+		}
+
+		OFPacketOut.Builder pob = sw.getOFFactory().buildPacketOut();
+		// set actions
+		List<OFAction> actions = new ArrayList<OFAction>();
+
+		actions.add(sw.getOFFactory().actions().pushMpls(EthType.MPLS_UNICAST));
+        actions.add(sw.getOFFactory().actions().setField(sw.getOFFactory().oxms().mplsLabel(U32.of(MPLSId))));
+        actions.add(sw.getOFFactory().actions().setField(sw.getOFFactory().oxms().mplsTc(U8.of((short)4))));
+        
+		actions.add(sw.getOFFactory().actions().output(outport, Integer.MAX_VALUE));
+		pob.setActions(actions);
+
+		if (useBufferId) {
+			pob.setBufferId(pi.getBufferId());
+		} else {
+			pob.setBufferId(OFBufferId.NO_BUFFER);
+		}
+
+		if (pob.getBufferId() == OFBufferId.NO_BUFFER) {
+			byte[] packetData = pi.getData();
+			pob.setData(packetData);
+		}
+
+		pob.setInPort((pi.getVersion().compareTo(OFVersion.OF_12) < 0 ? pi.getInPort() : pi.getMatch().get(MatchField.IN_PORT)));
+
+		try {
+			messageDamper.write(sw, pob.build());
+		} catch (IOException e) {
+			logger.error("Failure writing packet out", e);
+		}
+	}
+
+	
 }

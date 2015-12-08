@@ -68,7 +68,8 @@ public class PacketTraceResource extends ServerResource {
             this.output = output;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return "SessionID: " + sessionId +
                    "\tmac" + mac +
                    "\tperiod" + period +

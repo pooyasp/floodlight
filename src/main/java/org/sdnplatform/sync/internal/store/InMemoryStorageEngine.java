@@ -267,17 +267,20 @@ public class InMemoryStorageEngine<K, V> implements IStorageEngine<K, V> {
             this.iterator = map.entrySet().iterator();
         }
 
-        public boolean hasNext() {
+        @Override
+		public boolean hasNext() {
             return iterator.hasNext();
         }
 
-        public Pair<K, List<Versioned<V>>> next() {
+        @Override
+		public Pair<K, List<Versioned<V>>> next() {
             Entry<K, List<Versioned<V>>> entry = iterator.next();
             return new Pair<K, List<Versioned<V>>>(entry.getKey(), 
                     entry.getValue());
         }
 
-        public void remove() {
+        @Override
+		public void remove() {
             throw new UnsupportedOperationException("No removal y'all.");
         }
 

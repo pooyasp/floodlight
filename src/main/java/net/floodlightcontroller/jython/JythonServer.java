@@ -59,7 +59,8 @@ public class JythonServer extends Thread {
      *
      * @see java.lang.Thread#run()
      */
-    public void run() {
+    @Override
+	public void run() {
         PythonInterpreter p = new PythonInterpreter();
         for (String name : this.locals.keySet()) {
             p.set(name, this.locals.get(name));

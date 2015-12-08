@@ -51,7 +51,8 @@ public class Pair<F, S> implements Serializable, Function<F, S>,
         this.second = second;
     }
 
-    public S apply(F from) {
+    @Override
+	public S apply(F from) {
         if(from == null ? first == null : from.equals(first))
             return second;
         return null;
